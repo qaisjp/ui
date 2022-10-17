@@ -59,6 +59,6 @@ export const load: LayoutLoad.root = async function ({ fetch }) {
     uiVersionInfo,
     namespaces: namespacesResp?.namespaces,
     settings: { ...settings, defaultNamespace },
-    cluster
+    cluster,
   };
 };

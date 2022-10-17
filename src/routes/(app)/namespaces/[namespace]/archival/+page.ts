@@ -7,8 +7,7 @@ export const load: PageLoad = async function ({ params, url, parent }) {
   const { searchParams } = url;
   const data = await parent();
 
-  if (!searchParams.has('time-range'))
-    searchParams.set('time-range', '1 day');
+  if (!searchParams.has('time-range')) searchParams.set('time-range', '1 day');
 
   const namespace = params.namespace;
   const workflowId = searchParams.get('workflow-id');
