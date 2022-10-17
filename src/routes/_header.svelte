@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type { PageData } from '@sveltejs/kit';
+
   import { page } from '$app/stores';
   import type { DescribeNamespaceResponse as Namespace } from '$types';
   import { goto } from '$app/navigation';
@@ -19,11 +21,13 @@
   import { workflowSorts, workflowFilters } from '$lib/stores/filters';
 
   export let user: User;
+  export let settings: Settings;
+  export let allNamespaces: temporal.api.workflowservice.v1.IDescribeNamespaceResponse[];
 
-  const { showTemporalSystemNamespace } = $page.stuff.settings;
-  const { isCloud } = $page.stuff.settings.runtimeEnvironment;
+  const { showTemporalSystemNamespace } = settings;
+  const { isCloud } = settings.runtimeEnvironment;
 
-  const namespaces = ($page.stuff.namespaces || [])
+  const namespaces = (allNamespaces || [])
     .map((namespace: Namespace) => namespace?.namespaceInfo?.name)
     .filter(
       (namespace: string) =>
@@ -31,7 +35,7 @@
     );
 
   $: activeNamespaceName = $page.params?.namespace ?? $lastUsedNamespace;
-  $: activeNamespace = ($page.stuff.namespaces || []).find(
+  $: activeNamespace = (namespaces || []).find(
     (namespace: Namespace) =>
       namespace?.namespaceInfo?.name === activeNamespaceName,
   );
@@ -78,7 +82,7 @@
     schedules: routeForSchedules({ namespace: activeNamespaceName }),
     workflows: routeForWorkflows({ namespace: activeNamespaceName }),
     feedback:
-      $page.stuff?.settings?.feedbackURL ||
+      $page.data?.settings?.feedbackURL ||
       'https://github.com/temporalio/ui/issues/new/choose',
   };
 

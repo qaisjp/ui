@@ -1,19 +1,7 @@
-<script context="module" lang="ts">
-  import type { Load } from '@sveltejs/kit';
-
-  import '../app.css';
-
-  export const load: Load = async function ({ error, status }) {
-    return {
-      props: {
-        error,
-        status,
-      },
-    };
-  };
-</script>
-
 <script lang="ts">
+  import '../app.css';
+  import { page } from '$app/stores';
+
   import Error from '$lib/components/error.svelte';
   import { isNetworkError } from '$lib/utilities/is-network-error';
   import { parseWithBigInt } from '$lib/utilities/parse-with-big-int';
@@ -32,4 +20,4 @@
   } catch (e) {}
 </script>
 
-<Error {error} {status} />
+<Error error={$page.error} status={$page.status} />

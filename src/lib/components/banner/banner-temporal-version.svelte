@@ -5,8 +5,7 @@
   import Banner from './banner.svelte';
 
   export let shownBanner: BannersState;
-
-  const { cluster } = $page.stuff;
+  export let cluster: temporal.api.workflowservice.v1.IGetClusterInfoResponse;
 
   const severities = {
     High: 'high',
