@@ -18,7 +18,7 @@
 
   import EmptyState from '$lib/holocene/empty-state.svelte';
   import Pagination from '$lib/holocene/pagination.svelte';
-  import WorkflowStatus from '$lib/components/workflow-status.svelte';
+  import ExecutionStatusDropdownFilter from '$lib/components/workflow/dropdown-filter/workflow-status.svelte';
   import WorkflowsSummaryTableWithFilters from '$lib/components/workflow/workflows-summary-table-with-filters.svelte';
   import WorkflowsSummaryRowWithFilters from '$lib/components/workflow/workflows-summary-row-with-filters.svelte';
   import NamespaceSelector from '$lib/holocene/namespace-selector.svelte';
@@ -252,16 +252,6 @@
       resetSelection();
     }
   }
-
-  const AllStatuses = [
-    'Running',
-    'TimedOut',
-    'Completed',
-    'Failed',
-    'ContinuedAsNew',
-    'Canceled',
-    'Terminated',
-  ];
 </script>
 
 <BatchOperationConfirmationModal
@@ -315,19 +305,7 @@
     >
   </div>
 </div>
-<div class="hidden w-full flex-wrap items-center gap-4 md:flex">
-  {#each AllStatuses as status (status)}
-    <button class="mini-card">
-      <div class="text-right">
-        <!-- TODO: Add status count -->
-        <p class="font-semibold">{''}</p>
-        <span class="float-right">
-          <WorkflowStatus {status} />
-        </span>
-      </div>
-    </button>
-  {/each}
-</div>
+<ExecutionStatusDropdownFilter cardView />
 <Pagination items={$workflows} let:visibleItems>
   <svelte:fragment slot="action-top-left">
     <WorkflowAdvancedSearch />
@@ -378,15 +356,3 @@
     {/each}
   </WorkflowsSummaryTableWithFilters>
 </Pagination>
-
-<style lang="postcss">
-  .mini-card {
-    @apply z-20 flex h-auto min-w-fit flex-col items-center gap-4 rounded-lg border border-gray-900 p-4 transition-all duration-300 ease-out;
-  }
-
-  .mini-card:hover {
-    @apply z-50 -translate-y-1 bg-gradient-to-b from-blue-100 to-purple-100 duration-300 ease-in;
-
-    box-shadow: 5px 5px #18181b, 5px 5px 0 3px #18181b;
-  }
-</style>

@@ -6,6 +6,8 @@
   import { workflowFilters, workflowSorts } from '$lib/stores/filters';
   import { updateQueryParamsFromFilter } from '$lib/utilities/query/to-list-workflow-filters';
 
+  export let cardView = false;
+
   const AllStatuses = {
     All: 'All',
     Running: 'Running',
@@ -84,51 +86,83 @@
   };
 </script>
 
-<DropdownMenu
-  value={statusFilters.length
-    ? statusFilters.map((s) => s.value).join('')
-    : statusSort?.value ?? ''}
-  dataCy="execution-status-filter"
-  keepOpen
-  left
-  icon="filter"
->
-  <svelte:fragment slot="label">Status</svelte:fragment>
-  <div class="flex w-56 flex-col gap-4 py-2">
-    {#each Object.entries(AllStatuses) as [label, _value] (_value)}
+{#if cardView}
+  <div class="hidden w-full flex-wrap items-center gap-4 md:flex">
+    {#each Object.values(AllStatuses).filter((s) => s !== 'All') as _value (_value)}
       <button
-        class="flex items-center transition-all hover:cursor-pointer"
-        data-cy={label}
+        class="mini-card"
+        class:selected={statusFilters.find((s) => s.value === _value) ||
+          (!statusFilters.length && _value === 'All')}
         on:click={() => onStatusClick(_value)}
       >
-        <div
-          class="ml-4 mr-2 h-4 w-4 rounded-sm ring-1 ring-gray-900"
-          class:active={statusFilters.find((s) => s.value === _value) ||
-            (!statusFilters.length && _value === 'All')}
-        >
-          {#if statusFilters.find((s) => s.value === _value) || (!statusFilters.length && _value === 'All')}
-            <Icon
-              class="pointer-events-none -mt-[1px] -ml-[2px] text-white"
-              name="checkmark"
-              width={20}
-              height={20}
-            />
-          {/if}
-        </div>
-        <div class="flex h-6 items-center text-sm hover:scale-[103%]">
-          {#if _value === 'All'}
-            All Statuses
-          {:else}
+        <div class="text-right">
+          <!-- TODO: Add status count -->
+          <p class="font-semibold">{''}</p>
+          <span class="float-right">
             <WorkflowStatus status={_value} />
-          {/if}
+          </span>
         </div>
       </button>
     {/each}
   </div>
-</DropdownMenu>
+{:else}
+  <DropdownMenu
+    value={statusFilters.length
+      ? statusFilters.map((s) => s.value).join('')
+      : statusSort?.value ?? ''}
+    dataCy="execution-status-filter"
+    keepOpen
+    left
+    icon="filter"
+  >
+    <svelte:fragment slot="label">Status</svelte:fragment>
+    <div class="flex w-56 flex-col gap-4 py-2">
+      {#each Object.entries(AllStatuses) as [label, _value] (_value)}
+        <button
+          class="flex items-center transition-all hover:cursor-pointer"
+          data-cy={label}
+          on:click={() => onStatusClick(_value)}
+        >
+          <div
+            class="ml-4 mr-2 h-4 w-4 rounded-sm ring-1 ring-gray-900"
+            class:active={statusFilters.find((s) => s.value === _value) ||
+              (!statusFilters.length && _value === 'All')}
+          >
+            {#if statusFilters.find((s) => s.value === _value) || (!statusFilters.length && _value === 'All')}
+              <Icon
+                class="pointer-events-none -mt-[1px] -ml-[2px] text-white"
+                name="checkmark"
+                width={20}
+                height={20}
+              />
+            {/if}
+          </div>
+          <div class="flex h-6 items-center text-sm hover:scale-[103%]">
+            {#if _value === 'All'}
+              All Statuses
+            {:else}
+              <WorkflowStatus status={_value} />
+            {/if}
+          </div>
+        </button>
+      {/each}
+    </div>
+  </DropdownMenu>
+{/if}
 
 <style lang="postcss">
   .active {
     @apply bg-gray-900 text-white;
+  }
+
+  .mini-card {
+    @apply z-20 flex h-auto min-w-fit flex-col items-center gap-4 rounded-lg border border-gray-900 p-4 transition-all duration-300 ease-out;
+  }
+
+  .selected,
+  .mini-card:hover {
+    @apply z-50 -translate-y-1 bg-gradient-to-b from-blue-100 to-purple-100 duration-300 ease-in;
+
+    box-shadow: 5px 5px #18181b, 5px 5px 0 3px #18181b;
   }
 </style>
