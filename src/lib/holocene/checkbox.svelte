@@ -7,6 +7,7 @@
   export let onDark = false;
   export let indeterminate = false;
   export let disabled = false;
+  export let bindGroup = [];
 
   const dispatch = createEventDispatcher<{ change: { checked: boolean } }>();
 
@@ -31,7 +32,15 @@
   </span>
   <input
     on:click|stopPropagation
-    on:change={handleChange}
+    on:change={(...args) => {
+      const { value, checked } = args[0].currentTarget;
+      if (checked) {
+        bindGroup = [...bindGroup, value];
+      } else {
+        bindGroup = bindGroup.filter((item) => item !== value);
+      }
+      handleChange(args);
+    }}
     {id}
     type="checkbox"
     bind:checked

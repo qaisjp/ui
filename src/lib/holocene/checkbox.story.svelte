@@ -8,6 +8,7 @@
   let indeterminate = false;
   let disabled = false;
   let label = '';
+  let theGroup = [];
 </script>
 
 <Hst.Story>
@@ -22,6 +23,41 @@
         bind:disabled
       />
     </div>
+  </Hst.Variant>
+
+  <Hst.Variant title="A regular ol` checkbox">
+    <div class="grid gap-5 " class:bg-primary={onDark}>
+      <label>
+        stuff
+        <input
+          checked={true}
+          bind:group={theGroup}
+          name="stuff"
+          value="stuff"
+          type="checkbox"
+        />
+      </label>
+      <label>
+        things
+        <input
+          bind:group={theGroup}
+          name="things"
+          value="things"
+          type="checkbox"
+        />
+      </label>
+      <label>
+        etc
+        <input bind:group={theGroup} name="etc" value="etc" type="checkbox" />
+      </label>
+    </div>
+    <button
+      on:click={() => {
+        console.log(theGroup);
+      }}
+    >
+      What's the value
+    </button>
   </Hst.Variant>
 
   <svelte:fragment slot="controls">
