@@ -165,3 +165,15 @@ export async function getWorkflowStackTrace(
     accessToken,
   );
 }
+
+export async function getWorkflowEnhancedStackTrace(
+  options: WorkflowParameters,
+  settings: Settings,
+  accessToken: string,
+): Promise<ParsedQuery> {
+  return getQuery(
+    { ...options, queryType: '__enhanced_stack_trace' },
+    settings,
+    accessToken,
+  );
+}
