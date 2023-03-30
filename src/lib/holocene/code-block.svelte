@@ -92,13 +92,13 @@
           on:click={(e) => showStack(e.currentTarget.parentElement)}
           class="absolute  top-4 right-24 rounded-md bg-gray-900 opacity-90 hover:bg-white"
         >
-          <Icon name="chevronUp" class="text-white hover:text-gray-900" />
+          <Icon name="chevron-up" class="text-white hover:text-gray-900" />
         </button>
         <button
           on:click={(e) => showStack(e.currentTarget.parentElement)}
           class="absolute top-4 right-14 rounded-md bg-gray-900 opacity-90 hover:bg-white"
         >
-          <Icon name="chevronDown" class="text-white hover:text-gray-900" />
+          <Icon name="chevron-down" class="text-white hover:text-gray-900" />
         </button>
       {/if}
 
@@ -128,6 +128,7 @@
 
   .snippet {
     padding-left: 72px;
-    display: none;
+
+    /* display: none; */
   }
 </style>

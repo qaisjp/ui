@@ -58,7 +58,7 @@
 
   let stackTrace: Eventual<ParsedQuery>;
   $: {
-    if (workflow.isRunning)
+    if (workflow?.isRunning)
       stackTrace = isEnhancedStackSelected
         ? getEnhancedStackTrace()
         : getStackTrace();
@@ -87,6 +87,9 @@
       currentdate = new Date();
     });
   };
+
+  localStorage.setItem('isSDKsupported', 'yes');
+  $: isSDKSupported = localStorage.getItem('isSDKsupported') === 'yes';
 </script>
 
 <section>
@@ -97,12 +100,12 @@
         <p>(This will fail if you have no workers running.)</p>
       </div>
     {:then result}
-      {#if localStorage.getItem('isSDKsupported') === null}
+      <!-- {#if localStorage.getItem('isSDKsupported') === null}
         {localStorage.setItem(
           'isSDKsupported',
           getSDKOrigin(JSON.stringify(result)) === 'typescript' ? 'yes' : 'no',
         )}
-      {/if}
+      {/if} -->
       <div class="flex items-center gap-4">
         <Button on:click={refreshStackTrace} icon="retry" loading={isLoading}>
           Refresh
@@ -127,33 +130,32 @@
         <p>Stack Trace at {currentdate.toLocaleTimeString()}</p>
       </div>
       {#if isEnhancedStackSelected}
-        {#if localStorage.getItem('isSDKsupported') === 'yes'}
+        {#if isSDKSupported}
           <div class="text-left">
-            {#each result.stacks as stack}
+            {#each JSON.parse(result)?.stacks as { locations }}
+              {@const parsedResult = JSON.parse(result)}
               <div>
-                {#each stack.locations as location}
-                  {#if location.filePath}
+                {#each locations as location}
+                  {@const { filePath, line } = location}
+                  {@const sourceText =
+                    parsedResult.sources[filePath]?.[0].content}
+                  {#if filePath}
                     <CodeBlock
-                      content={location.filePath}
+                      content={filePath}
                       type="collapsible"
                       language="text"
-                      stackHead={location === stack.locations[0]}
+                      stackHead={location === locations[0]}
                     />
-                    <CodeBlock
-                      type="snippet"
-                      content={getSnippet(
-                        location.line,
-                        result.sources[location.filePath][0].content,
-                      )[0]}
-                      highlightLine={location.line}
-                      lineOffset={location.line -
-                        getSnippet(
-                          location.line,
-                          result.sources[location.filePath][0].content,
-                        )[1]}
-                      language={result.sdk.name}
-                      dataCy="query-stack-trace"
-                    />
+                    {#if sourceText}
+                      <CodeBlock
+                        type="snippet"
+                        content={getSnippet(line, sourceText)[0]}
+                        highlightLine={line}
+                        lineOffset={line - getSnippet(line, sourceText)[1]}
+                        language={parsedResult.sdk.name}
+                        dataCy="query-stack-trace"
+                      />
+                    {/if}
                   {:else}
                     <CodeBlock
                       content={location.functionName}
